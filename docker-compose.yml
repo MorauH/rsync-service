@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  nas-backup-sync:
+    build: .
+    container_name: nas-backup-sync
+    volumes:
+      # Mount your NAS shares (adjust these paths)
+      - /mnt/nas:/source:ro
+      # Mount backup destination (or use SSH to remote server)
+      - /backup:/dest
+      # Mount SSH keys for remote backup
+      - ./ssh:/root/.ssh:ro
+      # Mount config and logs
+      - ./config.json:/app/config.json
+      - ./logs:/app/logs
+      - ./status.json:/app/status.json
+    environment:
+      - TZ=Europe/Stockholm
+    restart: unless-stopped
+    # Run sync every hour
+    command: >
+      sh -c "
+      while true; do
+        echo 'Starting backup sync at $(date)'
+        python3 /app/sync.py
+        echo 'Backup sync completed at $(date), sleeping for 1 hour'
+        sleep 3600
+      done"
+
+  nas-backup-web:
+    build: .
+    container_name: nas-backup-web
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config.json:/app/config.json:ro
+      - ./logs:/app/logs:ro
+      - ./status.json:/app/status.json:ro
+    environment:
+      - TZ=Europe/Stockholm
+    restart: unless-stopped
+    command: python3 /app/web_server.py 8080
+    depends_on:
+      - nas-backup-sync
+
+networks:
+  default:
+    name: nas-backup

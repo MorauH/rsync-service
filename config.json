@@ -1,0 +1,47 @@
+{
+    "sync_jobs": [
+      {
+        "name": "Documents Share",
+        "source": "/mnt/nas/documents/",
+        "destination": "backup-user@192.168.1.100:/backup/documents/",
+        "enabled": true,
+        "exclude": [
+          "*.tmp",
+          "*.log",
+          ".DS_Store"
+        ]
+      },
+      {
+        "name": "Media Share", 
+        "source": "/mnt/nas/media/",
+        "destination": "backup-user@192.168.1.100:/backup/media/",
+        "enabled": true,
+        "exclude": [
+          "*.part",
+          "Thumbs.db"
+        ]
+      },
+      {
+        "name": "Photos Share",
+        "source": "/mnt/nas/photos/",
+        "destination": "backup-user@192.168.1.100:/backup/photos/",
+        "enabled": true,
+        "exclude": []
+      }
+    ],
+    "settings": {
+      "rsync_options": "-avz --delete --stats",
+      "ssh_key": "/home/user/.ssh/backup_key",
+      "notification": {
+        "email": "your@email.com",
+        "smtp_server": "smtp.gmail.com",
+        "smtp_port": 587,
+        "smtp_user": "your@email.com",
+        "smtp_pass": "your-app-password"
+      },
+      "web_interface": {
+        "port": 8080,
+        "title": "NAS Backup Monitor"
+      }
+    }
+  }
