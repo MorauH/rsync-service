@@ -7,7 +7,6 @@ set -e
 
 INSTALL_DIR="/opt/nas-backup-sync"
 SERVICE_USER="backup-sync"
-CONFIG_FILE="config.json"
 
 # Colors for output
 RED='\033[0;31m'
@@ -117,7 +116,7 @@ After=network.target
 Type=simple
 User=$SERVICE_USER
 WorkingDirectory=$INSTALL_DIR
-ExecStart=/usr/bin/python3 $INSTALL_DIR/web_server.py 8080
+ExecStart=/usr/bin/python3 $INSTALL_DIR/web_server.py
 Restart=always
 RestartSec=10
 

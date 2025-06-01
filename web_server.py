@@ -6,6 +6,14 @@ from datetime import datetime
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import urllib.parse
 
+def load_config():
+    """Load configuration from JSON file"""
+    try:
+        with open('config.json', 'r') as f:
+            return json.load(f)
+    except Exception:
+        return {'sync_jobs': [], 'settings': {}}
+
 class BackupStatusHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/' or self.path == '/index.html':
@@ -33,7 +41,7 @@ class BackupStatusHandler(SimpleHTTPRequestHandler):
         """Serve status data as JSON API"""
         try:
             status = self.load_status()
-            config = self.load_config()
+            config = load_config()
             
             response = {
                 'status': status,
@@ -112,14 +120,6 @@ class BackupStatusHandler(SimpleHTTPRequestHandler):
             return {'jobs': {}, 'last_run': None, 'total_runs': 0}
         except Exception:
             return {'jobs': {}, 'last_run': None, 'total_runs': 0}
-    
-    def load_config(self):
-        """Load configuration from JSON file"""
-        try:
-            with open('config.json', 'r') as f:
-                return json.load(f)
-        except Exception:
-            return {'sync_jobs': [], 'settings': {}}
     
     def format_datetime(self, iso_string):
         """Format ISO datetime string for display"""
@@ -454,13 +454,8 @@ def start_server(port=8080):
     httpd.serve_forever()
 
 if __name__ == "__main__":
-    import sys
     
-    port = 8080
-    if len(sys.argv) > 1:
-        try:
-            port = int(sys.argv[1])
-        except ValueError:
-            print("Invalid port number, using default 8080")
-    
+    config = load_config()
+    port = config.get('settings', {}).get('web_interface', {}).get('port', 8080)
+
     start_server(port)
