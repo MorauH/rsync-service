@@ -150,7 +150,7 @@ class BackupStatusHandler(SimpleHTTPRequestHandler):
     def generate_status_html(self):
         """Generate the HTML status page"""
         status = self.load_status()
-        config = self.load_config()
+        config = load_config()
         
         title = config.get('settings', {}).get('web_interface', {}).get('title', 'NAS Backup Monitor')
         
